@@ -4,12 +4,44 @@ import './App.css';
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./style2.css"
+
+import LoggedIn from './LoggedIn';
+import LogIn from './Login';
+import facade from './ApiFacade';
+
+import { useState } from 'react';
+
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   NavLink
 } from "react-router-dom";
+
+function LoginPrompt() {
+  const [loggedIn, setLoggedIn] = useState(false)
+
+  const logout = () => {
+    facade.logout()
+    setLoggedIn(false)
+  }
+
+  const login = (user, pass) => {
+    facade.login(user, pass)
+      .then(res => setLoggedIn(true));
+  }
+
+  return (
+    <div>
+      {!loggedIn ? (<LogIn login={login} />) :
+        (<div>
+          <LoggedIn facade={facade} />
+          <button onClick={logout}>Logout</button>
+        </div>)}
+    </div>
+  )
+}
+
 export default function BasicExample() {
   return (
     <Router>
@@ -17,13 +49,15 @@ export default function BasicExample() {
         <Header/>
         <hr />
 
-        {/*
+        {
+          /*
           A <Switch> looks through all its children <Route>
           elements and renders the first one whose path
           matches the current URL. Use a <Switch> any time
           you have multiple routes, but you want only one
           of them to render at a time
-        */}
+          */
+        }
         <div className="content">
         <Switch>
           <Route exact path="/">
@@ -75,20 +109,12 @@ function Home() {
 
 function Login() {
   return (
-    <form>
+
+    
+    <form action="{URL}">
     <div class="form-group w-25">
-      <label for="exampleInputEmail1">Username</label>
-      <input type="username" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Username"/>
-      <small id="userHelp" class="form-text text-muted">We'll share your USERNAME with anyone else.</small>
+      <LoginPrompt/>
     </div>
-    <br/>
-    <div class="form-group w-25">
-      <label for="exampleInputPassword1">Password</label>
-      <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password"/>
-    </div>
-    <div class="form-check">
-    </div>
-    <button type="submit" class="btn btn-primary">Login</button>
   </form>
   );
 }
@@ -101,3 +127,19 @@ function Dashboard() {
   );
 }
 
+/*
+
+<label for="exampleInputEmail1">Username</label>
+      <input type="username" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Username"/>
+      <small id="userHelp" class="form-text text-muted">We'll share your USERNAME with anyone else.</small>
+    </div>
+    <br/>
+    <div class="form-group w-25">
+      <label for="exampleInputPassword1">Password</label>
+      <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password"/>
+    </div>
+    <div class="form-check">
+    </div>
+    <button type="submit" class="btn btn-primary">Login</button>
+
+*/
