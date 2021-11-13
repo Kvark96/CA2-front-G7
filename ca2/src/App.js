@@ -1,5 +1,3 @@
-
-import logo from './logo.svg';
 import './App.css';
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -17,6 +15,7 @@ import {
   Route,
   NavLink
 } from "react-router-dom";
+import { URL, WEATHER_URL } from './settings';
 
 function LoginPrompt() {
   const [loggedIn, setLoggedIn] = useState(false)
@@ -63,10 +62,10 @@ export default function BasicExample() {
           <Route exact path="/">
             <Home />
           </Route>
-          <Route path="/about">
+          <Route path="/login">
             <Login />
           </Route>
-          <Route path="/dashboard">
+          <Route path="/whatisthiseven">
             <Dashboard />
           </Route>
         </Switch>
@@ -88,10 +87,10 @@ function Header(){
           <NavLink exact activeClassName="selected" to="/">Weather</NavLink>
           </li>
           <li>
-            <NavLink exact activeClassName="selected" to="/about">Login</NavLink>
+            <NavLink exact activeClassName="selected" to="/login">Login</NavLink>
           </li>
           <li>
-            <NavLink exact activeClassName="selected" to="/dashboard">Dashboard</NavLink>
+            <NavLink exact activeClassName="selected" to="/whatisthiseven">Dashboard</NavLink>
           </li>
         </ul>
     </div>
@@ -101,16 +100,17 @@ function Header(){
 function Home() {
   return (
     <div className="col-md-12 text-center">
-      <h2>Home</h2>
-      <Button variant="primary" >Submit</Button>
+      <h2>Weather Information Central Service System (WICSS)</h2>
+      <form action={WEATHER_URL} method="POST">
+        <input type="text" name="city"/>
+        <button onClick="submit">Submit</button>
+      </form>
     </div>
   );
 }
 
 function Login() {
   return (
-
-    
     <form action="{URL}">
     <div class="form-group w-25">
       <LoginPrompt/>
