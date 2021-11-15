@@ -19,7 +19,6 @@ import { URL, WEATHER_URL } from './settings';
 
 function LoginPrompt() {
   const [loggedIn, setLoggedIn] = useState(false)
-
   const logout = () => {
     facade.logout()
     setLoggedIn(false)
@@ -27,8 +26,10 @@ function LoginPrompt() {
 
   const login = (user, pass) => {
     facade.login(user, pass)
-      .then(res => setLoggedIn(true));
+    .then(res => setLoggedIn(true));
   }
+
+
 
   return (
     <div>
@@ -47,7 +48,7 @@ export default function BasicExample() {
       <div>
         <Header/>
         <hr />
-
+        
         {
           /*
           A <Switch> looks through all its children <Route>
@@ -97,15 +98,56 @@ function Header(){
   );
 }
 
+
+
 function Home() {
-  return (
-    <div className="col-md-12 text-center">
-      <h2>Weather Information Central Service System (WICSS)</h2>
-      <form action={WEATHER_URL} method="POST">
-        <input type="text" name="city"/>
-        <button onClick="submit">Submit</button>
-      </form>
-    </div>
+  const [weather,setWeather] = useState({
+    "weather": {
+      "id": "",
+      "countryName": "",
+      "countryCode": "",
+      "timezone": "",
+      "temperature": ""
+    },
+    "country": {
+      "name": "",
+      "officialName": "",
+      "population": "",
+      "continents": [
+        ""
+      ],
+      "capital": [
+        ""
+      ]
+    }
+  })
+
+  const weatherData1 =(city) => {
+    facade.weatherData(city)
+    .then(res => res.json())
+    .then(data => setWeather(...weather,data))
+    .catch(error => {
+      console.log(error)
+    })
+  }
+  const [searchTerm, setSearchTerm] = useState("");
+  const searchForCity = (evt) => {
+      evt.preventDefault();
+      weatherData1(searchTerm);
+  }
+  const onChange = (evt) => {
+      setSearchTerm({...searchTerm, [evt.target.id]: evt.target.value})
+  }
+  
+  return(
+      <div>
+          <h2>Search for a city:</h2>
+          <form onChange={onChange} >
+                  <input placeholder="City Name" id="cityName" />
+                  <button onClick={searchForCity}>Submit</button>
+          </form>
+          <p>{weather.weather.id}</p>
+      </div>
   );
 }
 
@@ -127,19 +169,3 @@ function Dashboard() {
   );
 }
 
-/*
-
-<label for="exampleInputEmail1">Username</label>
-      <input type="username" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Username"/>
-      <small id="userHelp" class="form-text text-muted">We'll share your USERNAME with anyone else.</small>
-    </div>
-    <br/>
-    <div class="form-group w-25">
-      <label for="exampleInputPassword1">Password</label>
-      <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password"/>
-    </div>
-    <div class="form-check">
-    </div>
-    <button type="submit" class="btn btn-primary">Login</button>
-
-*/
