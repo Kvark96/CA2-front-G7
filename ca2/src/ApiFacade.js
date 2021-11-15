@@ -33,13 +33,6 @@ function apiFacade() {
             .then(res => { setToken(res.token) })
     }
 
-    const weatherData = (city) => {
-        const options = makeOptions("POST", true, { city: city });
-        return fetch(URL + "/api/weather", options)
-            .then(handleHttpErrors)
-            .then(res =>  res.json() )
-           
-    }
 
     const fetchData = () => {
         const options = makeOptions("GET", true); //True add's the token
@@ -71,8 +64,7 @@ function apiFacade() {
         loggedIn,
         login,
         logout,
-        fetchData,
-        weatherData
+        fetchData
     }
 }
 const facade = apiFacade();

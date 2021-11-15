@@ -26,10 +26,14 @@ function LoginPrompt() {
 
   const login = (user, pass) => {
     facade.login(user, pass)
+    .then(res => res.json())
     .then(res => setLoggedIn(true));
   }
 
-
+  const weatherData =(city) => {
+    facade.weatherData(city)
+    
+  }
 
   return (
     <div>
@@ -48,7 +52,7 @@ export default function BasicExample() {
       <div>
         <Header/>
         <hr />
-        
+       
         {
           /*
           A <Switch> looks through all its children <Route>
@@ -101,55 +105,72 @@ function Header(){
 
 
 function Home() {
-  const [weather,setWeather] = useState({
-    "weather": {
-      "id": "",
-      "countryName": "",
-      "countryCode": "",
-      "timezone": "",
-      "temperature": ""
-    },
-    "country": {
-      "name": "",
-      "officialName": "",
-      "population": "",
-      "continents": [
-        ""
-      ],
-      "capital": [
-        ""
-      ]
-    }
-  })
+  const [city, setCity] = useState('')
+  const [weatherData, setWeatherData] = useState(null)
 
-  const weatherData1 =(city) => {
-    facade.weatherData(city)
-    .then(res => res.json())
-    .then(data => setWeather(...weather,data))
-    .catch(error => {
-      console.log(error)
+  const fetchWeather = async (event) => {
+    event.preventDefault()
+
+    const response = await fetch(`${WEATHER_URL}?city=${city}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
     })
+
+    const data = await response.json()
+    setWeatherData(data)
   }
-  const [searchTerm, setSearchTerm] = useState("");
-  const searchForCity = (evt) => {
-      evt.preventDefault();
-      weatherData1(searchTerm);
-  }
-  const onChange = (evt) => {
-      setSearchTerm({...searchTerm, [evt.target.id]: evt.target.value})
-  }
-  
-  return(
+
+  if (weatherData !== null) {
+    return (
       <div>
-          <h2>Search for a city:</h2>
-          <form onChange={onChange} >
-                  <input placeholder="City Name" id="cityName" />
-                  <button onClick={searchForCity}>Submit</button>
-          </form>
-          <p>{weather.weather.id}</p>
+        <div>City: { weatherData.weather.city }</div>
+        <div>Official Name: { weatherData.country.officialName }</div>
+        <div>Population: { weatherData.country.population }</div>
+        <div>Temperature: { weatherData.weather.temperature }</div>
       </div>
+    )
+  }
+
+  return (
+    <div className="col-md-12 text-center">
+      <h2>Weather Information Central Service System (WICSS)</h2>
+      <form action={WEATHER_URL} method="POST">
+        <input type="text" name="city" value={city} onChange={e => setCity(e.target.value)} />
+        <button onClick={fetchWeather}>Submit</button>
+      </form>
+    </div>
   );
 }
+
+/*function Home() {
+  const myForm = document.getElementById('myForm');
+  myForm.addEventListener('submit', function (e){
+    e.preventDefault();
+    const formData = new FormData(this);
+    <form class="form" id="myForm">
+        <input type="text" name="city"/>
+        <button onClick="submit">Submit</button>
+      </form>
+    fetch('http://localhost:8080/CA2/api/weather',{
+      method: 'POST',
+      body: 'formData'
+    }).then(function(response){
+      return response.text();
+    }).then(function (text) {
+      console.log(text);
+    }).catch(function (error) {
+      console.log(error)
+    })
+  })
+  return (
+    <div className="col-md-12 text-center">
+      <h2>Weather Information Central Service System (WICSS)</h2>
+      
+    </div>
+  );
+}*/
 
 function Login() {
   return (
